@@ -9,22 +9,22 @@
 [![Providers](https://img.shields.io/badge/Providers-1_Implemented-orange?style=for-the-badge&logo=google&logoColor=white)](#-supported-providers)
 [![Formats](https://img.shields.io/badge/Document_Formats-PDF_TXT_DOCX-purple?style=for-the-badge&logo=files&logoColor=white)](#-supported-formats)
 
-[![Demo](https://img.shields.io/badge/🚀_Try_Demo-Jupyter-F37626?style=for-the-badge)](Notebooks/hello_world.ipynb)
+[![Demo](https://img.shields.io/badge/🚀_Try_Demo-Jupyter-F37626?style=for-the-badge)](Notebooks/demo.ipynb)
 [![Documentation](https://img.shields.io/badge/📚_Docs-Coming_Soon-blue?style=for-the-badge)](#)
 
 </div>
 
 ---
 
-## 🎯 Why Celeste?
+## 🎯 Why Celeste Document Intelligence?
 
 <div align="center">
   <table>
     <tr>
-      <td align="center">🔌<br><b>Unified API</b><br>One interface for all embedding providers</td>
-      <td align="center">📊<br><b>Vector Output</b><br>Dense embeddings for your AI apps</td>
+      <td align="center">🔌<br><b>Unified API</b><br>One interface for all document AI providers</td>
+      <td align="center">📄<br><b>Multi-Format</b><br>PDF, TXT, HTML, CSV, XML & more</td>
       <td align="center">⚡<br><b>Async First</b><br>Built for performance</td>
-      <td align="center">📦<br><b>Batch Processing</b><br>Efficient bulk embeddings</td>
+      <td align="center">🌊<br><b>Streaming</b><br>Real-time response streaming</td>
     </tr>
   </table>
 </div>
@@ -33,17 +33,29 @@
 
 ```python
 # Install
-!uv add celeste-embeddings  # Coming soon to PyPI
+!uv add celeste-document-intelligence  # Coming soon to PyPI
 
-# Use any embedding provider with the same interface
-from celeste_embeddings import create_embedder
-from celeste_embeddings.core.enums import GoogleEmbedding
+# Process documents with AI
+from celeste_document_intelligence import create_doc_client, Document, MimeType
+from celeste_document_intelligence.core.enums import GeminiModel
 
-# Create an embedder (currently Google is implemented)
-embedder = create_embedder("google", model=GoogleEmbedding.GEMINIEMBEDDING)
-# Generate embeddings for a single text
-text = "The quick brown fox jumps over the lazy dog"
-embedding = await embedder.embed(text)
+# Create a client (currently Google Gemini is implemented)
+client = create_doc_client("google", model=GeminiModel.FLASH)
+
+# Create a document reference
+doc = Document(
+    file_path=Path("document.pdf"),
+    mime_type=MimeType.PDF
+)
+
+# Ask questions about the document
+response = await client.generate_content(
+    prompt="Summarize this document",
+    documents=[doc]
+)
+
+print(response.text)  # AI-generated summary
+print(response.usage)  # Token usage for cost tracking
 ```
 
 ## 📦 Installation
@@ -52,8 +64,8 @@ embedding = await embedder.embed(text)
 <summary><b>Using UV (Recommended)</b></summary>
 
 ```bash
-git clone https://github.com/yourusername/celeste-embeddings
-cd celeste-embeddings
+git clone https://github.com/yourusername/celeste-document-intelligence
+cd celeste-document-intelligence
 uv sync
 ```
 </details>
@@ -62,8 +74,8 @@ uv sync
 <summary><b>Using pip</b></summary>
 
 ```bash
-git clone https://github.com/yourusername/celeste-embeddings
-cd celeste-embeddings
+git clone https://github.com/yourusername/celeste-document-intelligence
+cd celeste-document-intelligence
 pip install -e .
 ```
 </details>
@@ -106,69 +118,66 @@ cp .env.example .env
 
 </div>
 
-## 📊 Supported Embedding Models
+## 📊 Supported Document Formats
 
 <details>
-<summary><b>View All Models</b></summary>
+<summary><b>View All Formats</b></summary>
 
-### 🌈 Google (Implemented)
-- `text-embedding-004` - Latest Google embedding model (768 dimensions)
-- `gemini-embedding-exp-03-07` - Experimental Gemini embeddings
-- `embedding-001` - Legacy embedding model
+### 📄 Documents
+- **PDF** - Portable Document Format
+- **TXT** - Plain text files
+- **HTML** - Web pages
+- **XML** - Structured data
+- **RTF** - Rich Text Format
+- **CSV** - Comma-separated values
 
-### 🤖 OpenAI (Planned)
-- `text-embedding-3-small` - Cost-effective embeddings
-- `text-embedding-3-large` - High-quality embeddings
-- `text-embedding-ada-002` - Legacy model
+### 💻 Code
+- **Python** (.py)
+- **JavaScript** (.js)
+- **CSS** (.css)
+- **Markdown** (.md)
 
-### 🌊 Mistral AI (Planned)
-- `mistral-embed` - Mistral's embedding model
-
-### 🎭 Anthropic (Planned)
-- Anthropic embedding models (when available)
-
-### 🤗 Hugging Face (Planned)
-- `sentence-transformers/all-MiniLM-L6-v2` - Lightweight
-- `sentence-transformers/all-mpnet-base-v2` - High quality
-- `BAAI/bge-large-en-v1.5` - State-of-the-art
-- [View more on HuggingFace](https://huggingface.co/models?pipeline_tag=sentence-similarity)
-
-### 🦙 Ollama (Planned)
-- `nomic-embed-text` - Nomic's embedding model
-- `mxbai-embed-large` - High-performance embeddings
-- [View all models](https://ollama.com/library?q=embed)
+### 🌈 AI Models (Currently Implemented)
+- **Gemini 2.5 Flash Lite** - Fast, lightweight model
+- **Gemini 2.5 Flash** - Balanced performance
+- **Gemini 2.5 Pro** - Highest capability
 
 </details>
 
 ## 🎮 Interactive Demo
 
-Try our Jupyter notebook example:
+Try our Jupyter notebook example: [Notebooks/demo.ipynb](Notebooks/demo.ipynb)
+
+Or run the Streamlit app:
+```bash
+streamlit run example.py
+```
 
 ## 🗺️ Roadmap
 
-### Celeste-Embeddings Next Steps
-- [x] 📝 **Core Types** - Implement Embedding and AIUsage types
-- [x] 🌈 **Google Provider** - Complete implementation with 3 models
-- [ ] 🤖 **OpenAI Provider** - Add support for text-embedding-3 models
-- [ ] 🌊 **Mistral Provider** - Add support for mistral-embed
-- [ ] 🎭 **Anthropic Provider** - Add support when embeddings are available
-- [ ] 🤗 **HuggingFace Provider** - Support for sentence-transformers
-- [ ] 🦙 **Ollama Provider** - Local embedding models support
+### Celeste-Document-Intelligence Next Steps
+- [x] 📝 **Core Types** - Document, AIResponse, and Usage types
+- [x] 🌈 **Google Provider** - Gemini 2.5 models implementation
+- [ ] 🤖 **OpenAI Provider** - GPT-4 Vision support
+- [ ] 🌊 **Mistral Provider** - Document understanding models
+- [ ] 🎭 **Anthropic Provider** - Claude 3 vision capabilities
+- [ ] 📑 **More Formats** - DOCX, PPTX, XLSX support
+- [ ] 🔍 **OCR Support** - Extract text from images in documents
 - [ ] 🧪 **Unit Tests** - Comprehensive test coverage
 - [ ] 📚 **Documentation** - API documentation with examples
-- [ ] 📦 **PyPI Package** - Publish to PyPI as `celeste-embeddings`
+- [ ] 📦 **PyPI Package** - Publish to PyPI as `celeste-document-intelligence`
 
 ### Celeste Ecosystem
 
 | Package | Description | Status |
 |---------|-------------|--------|
-| 🌟 **celeste-embeddings** | Text embeddings across providers | 🔄 This Package |
+| 📄 **celeste-document-intelligence** | PDF and document processing | 🔄 This Package |
 | 💬 **celeste-client** | Text generation and chat | ✅ Available |
 | 💬 **celeste-conversations** | Multi-turn conversations with memory | 🔄 In Progress |
 | 🌐 **celeste-web-agent** | Web browsing and automation | 📋 Planned |
 | 🎨 **celeste-image-generation** | Image generation across providers | 📋 Planned |
 | 🖼️ **celeste-image-intelligence** | Image analysis and understanding | 📋 Planned |
-| 📄 **celeste-document-intelligence** | PDF and document processing | 📋 Planned |
+| 🌟 **celeste-embeddings** | Text embeddings across providers | 📋 Planned |
 | 📈 **celeste-table-intelligence** | Excel, CSV, and Parquet analysis | 📋 Planned |
 | 🎥 **celeste-video-intelligence** | Video analysis and understanding | 📋 Planned |
 | 🚀 **And many more...** | Expanding ecosystem of AI tools | 🔮 Future |
@@ -186,5 +195,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 <div align="center">
   Made with ❤️ by the Celeste Team
   
-  <a href="#-celeste-embeddings">⬆ Back to Top</a>
+  <a href="#-celeste-document-intelligence">⬆ Back to Top</a>
 </div>
