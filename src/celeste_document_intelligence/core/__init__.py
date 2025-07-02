@@ -2,9 +2,9 @@
 Core data definitions for Celeste Embedding Client.
 """
 
-from .enums import LogLevel, Provider
+from .enums import LogLevel, DocumentIntelligenceProvider
 
 __all__ = [
-    "Provider",
+    "DocumentIntelligenceProvider",
     "LogLevel",
 ]
