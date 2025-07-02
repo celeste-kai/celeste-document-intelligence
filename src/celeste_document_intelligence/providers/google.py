@@ -7,7 +7,7 @@ from ..base import BaseDocClient
 from ..core.config import GOOGLE_API_KEY
 from ..core.enums import GeminiModel
 from ..core.types import AIUsage, Document, AIResponse
-from ..core.enums import Provider
+from ..core.enums import DocumentIntelligenceProvider
 
 
 class GeminiDocClient(BaseDocClient):
@@ -64,7 +64,7 @@ class GeminiDocClient(BaseDocClient):
         return AIResponse(
             text=response.text,
             usage=usage,
-            provider=Provider.GOOGLE,
+            provider=DocumentIntelligenceProvider.GOOGLE,
             metadata={"model": self.model_name},
         )
 
@@ -92,7 +92,7 @@ class GeminiDocClient(BaseDocClient):
             if chunk.text:  # Only yield if there's actual content
                 yield AIResponse(
                     text=chunk.text,
-                    provider=Provider.GOOGLE,
+                    provider=DocumentIntelligenceProvider.GOOGLE,
                     metadata={"model": self.model_name, "is_stream_chunk": True},
                 )
             if hasattr(chunk, "usage_metadata") and chunk.usage_metadata:
@@ -103,6 +103,6 @@ class GeminiDocClient(BaseDocClient):
             yield AIResponse(
                 text="",  # Empty content for the usage-only response
                 usage=usage,
-                provider=Provider.GOOGLE,
+                provider=DocumentIntelligenceProvider.GOOGLE,
                 metadata={"model": self.model_name, "is_final_usage": True},
             )

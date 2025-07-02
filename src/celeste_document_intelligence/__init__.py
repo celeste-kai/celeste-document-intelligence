@@ -6,7 +6,7 @@ from typing import Any
 
 from .base import BaseDocClient
 from .core.types import AIResponse, AIUsage, Document
-from .core.enums import Provider, MimeType, GeminiModel
+from .core.enums import DocumentIntelligenceProvider, MimeType, GeminiModel
 
 __version__ = "0.1.0"
 
@@ -31,7 +31,7 @@ def create_doc_client(provider: str, **kwargs: Any) -> BaseDocClient:
 __all__ = [
     "create_doc_client",
     "BaseDocClient",
-    "Provider",
+    "DocumentIntelligenceProvider",
     "AIResponse",
     "AIUsage",
     "Document",

@@ -7,7 +7,7 @@ from typing import Any, Dict, Optional
 
 from pydantic import BaseModel, ConfigDict
 
-from .enums import Provider, MimeType
+from .enums import DocumentIntelligenceProvider, MimeType
 
 
 class AIUsage(BaseModel):
@@ -25,7 +25,7 @@ class AIResponse(BaseModel):
 
     text: str
     usage: Optional[AIUsage] = None
-    provider: Optional[Provider] = None
+    provider: Optional[DocumentIntelligenceProvider] = None
     metadata: Dict[str, Any] = {}
 
 
