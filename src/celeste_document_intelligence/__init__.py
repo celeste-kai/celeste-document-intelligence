@@ -4,37 +4,46 @@ Celeste Document Intelligence - Multi-provider document processing client for Py
 
 from typing import Any
 
-from .base import BaseDocClient
-from .core.types import AIResponse, AIUsage, Document
-from .core.enums import DocumentIntelligenceProvider, MimeType, GeminiModel
+from celeste_core import Provider
+from celeste_core.base.document_client import BaseDocClient
+from celeste_core.config.settings import settings
+
+from .core.enums import MimeType
+from .core.types import Document
 
 __version__ = "0.1.0"
 
-SUPPORTED_PROVIDERS = [
-    "google",
-]
+SUPPORTED_PROVIDERS: set[Provider] = {Provider.GOOGLE}
 
 
 def create_doc_client(provider: str, **kwargs: Any) -> BaseDocClient:
-    if provider not in SUPPORTED_PROVIDERS:
-        raise ValueError(f"Unsupported provider: {provider}")
+    provider_enum = Provider(provider) if isinstance(provider, str) else provider
+    if provider_enum not in SUPPORTED_PROVIDERS:
+        supported = [p.value for p in SUPPORTED_PROVIDERS]
+        raise ValueError(
+            f"Unsupported provider: {provider_enum.value}. Supported: {supported}"
+        )
 
-    if provider == "google":
-        from .providers.google import GeminiDocClient
+    # Validate environment for the chosen provider
+    settings.validate_for_provider(provider_enum.value)
 
-        return GeminiDocClient(**kwargs)
-    # Other providers to be implemented
+    mapping = {
+        Provider.GOOGLE: (".providers.google", "GeminiDocClient"),
+    }
 
-    raise ValueError(f"Provider {provider} not implemented")
+    module_path, class_name = mapping[provider_enum]
+    module = __import__(
+        f"celeste_document_intelligence{module_path}",
+        fromlist=[class_name],
+    )
+    client_class = getattr(module, class_name)
+    return client_class(**kwargs)
 
 
 __all__ = [
     "create_doc_client",
     "BaseDocClient",
-    "DocumentIntelligenceProvider",
-    "AIResponse",
-    "AIUsage",
+    "Provider",
     "Document",
     "MimeType",
-    "GeminiModel",
 ]
