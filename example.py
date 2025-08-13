@@ -3,10 +3,11 @@ from pathlib import Path
 from typing import List, Tuple
 
 import streamlit as st
-
+from celeste_core import AIResponse, list_models
+from celeste_core.enums.capability import Capability
 from src.celeste_document_intelligence import create_doc_client
-from src.celeste_document_intelligence.core.enums import MimeType, GeminiModel
-from src.celeste_document_intelligence.core.types import Document, AIResponse
+from src.celeste_document_intelligence.core.enums import MimeType
+from src.celeste_document_intelligence.core.types import Document
 
 st.set_page_config(
     page_title="Celeste Document Intelligence", page_icon="📄", layout="wide"
@@ -18,25 +19,22 @@ st.title("📄 Celeste Document Intelligence")
 with st.sidebar:
     st.header("⚙️ Configuration")
 
-    # Provider selection (currently only Google)
-    selected_provider = "google"
-    st.info("Provider: Google Gemini")
-
-    # Model selection using GeminiModel enum
-    model_options = list(GeminiModel)
-
-    def format_model(model: GeminiModel) -> str:
-        return model.name.replace("_", " ").title()
-
-    selected_model_enum = st.selectbox(
-        "Model:",
-        options=model_options,
-        format_func=format_model,
-        index=0,
+    # Provider selection from registry by DOCUMENT_INTELLIGENCE capability
+    providers = sorted(
+        {m.provider for m in list_models(capability=Capability.DOCUMENT_INTELLIGENCE)},
+        key=lambda p: p.value,
     )
+    selected_provider = providers[0].value if providers else "google"
+    st.info(f"Provider: {selected_provider.title()}")
 
-    # Get the actual model value
-    selected_model = selected_model_enum.value
+    # Model selection from registry
+    models = list_models(
+        provider=providers[0], capability=Capability.DOCUMENT_INTELLIGENCE
+    )
+    display = [m.display_name or m.id for m in models]
+    id_by_display = {d: models[i].id for i, d in enumerate(display)}
+    selected_display = st.selectbox("Model:", options=display, index=0)
+    selected_model = id_by_display[selected_display]
 
     st.divider()
 
@@ -113,7 +111,7 @@ if st.button("✨ Generate", type="primary", use_container_width=True):
                     prompt, documents=[document]
                 ):
                     response_chunks.append(chunk)
-                    # Only append text if it's not the final usage-only chunk
+
                     if chunk.text:
                         response_text += chunk.text
                         placeholder.markdown(f"**Response:**\n\n{response_text}▌")
@@ -134,7 +132,6 @@ if st.button("✨ Generate", type="primary", use_container_width=True):
                 # Create a combined response
                 combined_response = AIResponse(
                     text=response_text,
-                    usage=final_usage,
                     provider=chunks[0].provider,
                     metadata=chunks[0].metadata,
                 )
