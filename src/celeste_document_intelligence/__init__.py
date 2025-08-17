@@ -19,10 +19,7 @@ SUPPORTED_PROVIDERS: set[Provider] = {Provider.GOOGLE}
 def create_doc_client(provider: str, **kwargs: Any) -> BaseDocClient:
     provider_enum = Provider(provider) if isinstance(provider, str) else provider
     if provider_enum not in SUPPORTED_PROVIDERS:
-        supported = [p.value for p in SUPPORTED_PROVIDERS]
-        raise ValueError(
-            f"Unsupported provider: {provider_enum.value}. Supported: {supported}"
-        )
+        raise ValueError(f"Unsupported provider: {provider_enum}")
 
     # Validate environment for the chosen provider
     settings.validate_for_provider(provider_enum.value)
@@ -30,6 +27,9 @@ def create_doc_client(provider: str, **kwargs: Any) -> BaseDocClient:
     mapping = {
         Provider.GOOGLE: (".providers.google", "GeminiDocClient"),
     }
+
+    if provider_enum not in mapping:
+        raise ValueError(f"No client mapping for provider: {provider_enum}")
 
     module_path, class_name = mapping[provider_enum]
     module = __import__(
