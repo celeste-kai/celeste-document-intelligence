@@ -37,7 +37,7 @@ class GeminiDocClient(BaseDocClient):
     ) -> AIResponse:
         """Generate text from a prompt and a list of documents."""
         response = await self.client.aio.models.generate_content(
-            model=self.model_name,
+            model=self.model,
             contents=[
                 prompt,
                 *[
@@ -53,7 +53,7 @@ class GeminiDocClient(BaseDocClient):
         return AIResponse(
             content=response.text,
             provider=Provider.GOOGLE,
-            metadata={"model": self.model_name},
+            metadata={"model": self.model},
         )
 
     async def stream_generate_content(
@@ -73,11 +73,11 @@ class GeminiDocClient(BaseDocClient):
         ]
 
         async for chunk in await self.client.aio.models.generate_content_stream(
-            model=self.model_name, contents=contents, config=config
+            model=self.model, contents=contents, config=config
         ):
             if chunk.text:  # Only yield if there's actual content
                 yield AIResponse(
                     content=chunk.text,
                     provider=Provider.GOOGLE,
-                    metadata={"model": self.model_name, "is_stream_chunk": True},
+                    metadata={"model": self.model, "is_stream_chunk": True},
                 )
